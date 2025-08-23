@@ -4,9 +4,7 @@ import boardContext from "../../store/board-context";
 import { TOOL_ACTION_TYPES, TOOL_ITEMS } from "../../constants";
 import toolboxContext from "../../store/toolbox-context";
 import classes from "./index.module.css";
-import { userApi } from "../../api";
-
-// ⬇️ You were using these without importing
+import { getSocket } from "../../utils/socket";
 import { getStroke } from "perfect-freehand";
 import { getSvgPathFromStroke } from "../../utils/elements";
 
@@ -22,6 +20,7 @@ function Board() {
     textAreaBlurHandler,
     undo,
     redo,
+    editingElement,
   } = useContext(boardContext);
   const { toolboxState } = useContext(toolboxContext);
 
@@ -184,28 +183,36 @@ function Board() {
 
   const handleMouseUp = () => {
     boardMouseUpHandler();
-    const boardId = window.location.pathname.split("/").pop();
+    // const boardId = window.location.pathname.split("/").pop();
     // Persist only serializable fields
-    const persistable = elements.map(({ path, roughEle, ...rest }) => rest);
-    userApi.updateBoard(boardId, { elements: persistable });
+    // const persistable = elements.map(({ path, roughEle, ...rest }) => rest);
+    // userApi.updateBoard(boardId, { elements: persistable });
   };
 
   const handleMouseMove = (event) => {
     boardMouseMoveHandler(event);
+    const socket = getSocket();
+    const boardId = window.location.pathname.split("/").pop();
+    socket?.emit("cursor", {
+      boardId,
+      x: event.clientX,
+      y: event.clientY,
+      color: toolboxState.cursorColor,
+      name: toolboxState.displayName,
+    });
   };
 
   return (
     <>
-      {toolActionType === TOOL_ACTION_TYPES.WRITING && (
+      {toolActionType === TOOL_ACTION_TYPES.WRITING && editingElement && (
         <textarea
-          type="text"
           ref={textAreaRef}
           className={classes.textElementBox}
           style={{
-            top: elements[elements.length - 1].y1,
-            left: elements[elements.length - 1].x1,
-            fontSize: `${elements[elements.length - 1]?.size}px`,
-            color: elements[elements.length - 1]?.stroke,
+            top: editingElement.y1,
+            left: editingElement.x1,
+            fontSize: `${editingElement.size}px`,
+            color: editingElement.stroke,
           }}
           onBlur={(event) => textAreaBlurHandler(event.target.value)}
         />

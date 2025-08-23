@@ -1,4 +1,4 @@
-import {userApi} from "../api"
+import {userApi} from "../utils/api"
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Plus, User, Share2, Calendar, ChevronRight, Trash2, Settings, Users } from 'lucide-react';

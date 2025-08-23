@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import {userApi} from "../api"
+import {userApi} from "../utils/api"
 import { useNavigate } from 'react-router-dom';
 import styles from './auth.module.css';
 

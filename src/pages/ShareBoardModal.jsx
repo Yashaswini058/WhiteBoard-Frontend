@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Share2, Users } from 'lucide-react';
-import { userApi } from '../api';
+import { userApi } from '../utils/api';
 
 const ShareBoardModal = ({ show, board, user, onClose, onShare, onRemoveAccess }) => {
   const [email, setEmail] = useState('');

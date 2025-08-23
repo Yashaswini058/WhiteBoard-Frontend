@@ -4,9 +4,11 @@ import Board from "../components/board";
 import BoardProvider from "../store/BoardProvider";
 import ToolboxProvider from "../store/ToolboxProvider";
 import Toolbox from "../components/Toolbox";
-import { userApi } from "../api";
+import { userApi } from "../utils/api";
 import { getStroke } from "perfect-freehand";
 import { getSvgPathFromStroke } from "../utils/elements";
+// import { v4 as uuid } from "uuid";
+import { connectSocket, getSocket } from "../utils/socket";
 
 function WhiteBoard() {
   const [boardData, setBoardData] = useState(null);
@@ -40,6 +42,19 @@ function WhiteBoard() {
         setLoading(false);
       }
     })();
+  }, []);
+
+  useEffect(() => {
+    const token = localStorage.getItem("token"); // if using JWT
+    const s = connectSocket({ token });
+    const boardId = window.location.pathname.split("/").pop();
+    s.emit("board:join", { boardId });
+
+    return () => {
+      s.emit("board:leave", { boardId });
+      s.off(); // remove all listeners
+      s.disconnect();
+    };
   }, []);
 
   if (loading) return <div>Loading board...</div>;
