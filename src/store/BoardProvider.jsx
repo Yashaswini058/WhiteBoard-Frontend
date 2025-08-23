@@ -1,4 +1,4 @@
-import React,{useReducer,useCallback} from 'react'
+import React,{useReducer,useCallback, useEffect} from 'react'
 import BoardContext from './board-context';
 import { BOARD_ACTIONS, TOOL_ACTION_TYPES, TOOL_ITEMS } from '../constants';
 // import rough from "roughjs/bin/rough";
@@ -8,11 +8,48 @@ import {  getStroke } from 'perfect-freehand';
 
 const boardReducer=(state,action)=>{
     switch (action.type) {
-        case BOARD_ACTIONS.CHANGE_TOOL:{
+        case BOARD_ACTIONS.LOAD_BOARD: {
+            const raw = action.payload.elements || [];
+            const cooked = raw.map((el, idx) => {
+              // Rebuild BRUSH path
+              if (el.type === TOOL_ITEMS.BRUSH) {
+                return {
+                  id: el.id ?? idx,
+                  ...el,
+                  // Path2D must be rebuilt client-side for rendering
+                  path: new Path2D(getSvgPathFromStroke(getStroke(el.points || []))),
+                };
+              }
+              // Rebuild rough element for geometric shapes
+              if (
+              el.type === TOOL_ITEMS.LINE ||
+              el.type === TOOL_ITEMS.RECTANGLE ||
+              el.type === TOOL_ITEMS.CIRCLE ||
+              el.type === TOOL_ITEMS.ARROW
+            ) {
+              const { x1, y1, x2, y2, stroke, fill, size } = el;
+              return createRoughElement(
+                el.id ?? idx,
+                x1, y1, x2, y2,
+                { type: el.type, stroke, fill, size }
+              );
+            }
+            // TEXT or anything else just passes through
+            return { id: el.id ?? idx, ...el };
+          });
+          return {
+            ...state,
+            elements: cooked,
+            history: [cooked],
+            index: 0,
+          };
+        }
+        case BOARD_ACTIONS.CHANGE_TOOL: {
             return {
                 ...state,
                 activeToolItem: action.payload.tool,
-            };}
+            };
+        }
         case BOARD_ACTIONS.CHANGE_ACTION_TYPE: {
             return {    
                 ...state,
@@ -147,14 +184,25 @@ const boardReducer=(state,action)=>{
     }
 }
 
-const initialBoardState={
-    activeToolItem: TOOL_ITEMS.BRUSH,
-    toolActionType: TOOL_ACTION_TYPES.NONE,
-    elements: [], 
-    history: [[]],
-    index: 0,
-}
-const BoardProvider = ({children}) => {
+
+const BoardProvider = ({initialState,children}) => {
+    const initialBoardState={
+        activeToolItem: TOOL_ITEMS.BRUSH,
+        toolActionType: TOOL_ACTION_TYPES.NONE,
+        elements: initialState?.elements || [],
+        history: [initialState?.elements || []],
+        index: 0,
+    }
+
+    useEffect(() => {
+        if (initialState?.elements) {
+            dispatchBoardAction({
+                type: BOARD_ACTIONS.LOAD_BOARD,
+                payload: { elements: initialState.elements },
+            });
+        }
+    }, [initialState?.elements]);
+
     const [boardState, dispatchBoardAction] = useReducer(boardReducer,initialBoardState);
     const changeToolHandler = (tool) => {
         dispatchBoardAction({type: "CHANGE_TOOL", payload: {tool}}); 

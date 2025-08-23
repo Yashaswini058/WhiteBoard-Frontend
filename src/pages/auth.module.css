@@ -1,0 +1,87 @@
+.authContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: var(--bg-color);
+  padding: 20px;
+}
+
+.authBox {
+  background: var(--component-bg);
+  padding: 40px;
+  border-radius: 10px;
+  box-shadow: var(--box-shadow);
+  width: 100%;
+  max-width: 400px;
+}
+
+.authBox h2 {
+  text-align: center;
+  color: var(--text-primary);
+  margin-bottom: 30px;
+}
+
+.formGroup {
+  margin-bottom: 20px;
+}
+
+.formGroup input {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid var(--border-color);
+  border-radius: 5px;
+  font-size: 16px;
+  background: var(--input-bg);
+  color: var(--text-primary);
+}
+
+.formGroup input:focus {
+  border-color: var(--primary-color);
+  outline: none;
+}
+
+.submitButton {
+  width: 100%;
+  padding: 12px;
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.submitButton:hover {
+  background-color: var(--primary-dark);
+}
+
+.submitButton:disabled {
+  background-color: var(--disabled-color);
+  cursor: not-allowed;
+}
+
+.errorMessage {
+  color: var(--error-color);
+  text-align: center;
+  margin-bottom: 20px;
+  padding: 10px;
+  background-color: var(--error-bg);
+  border-radius: 5px;
+}
+
+.authLink {
+  text-align: center;
+  margin-top: 20px;
+  color: var(--text-secondary);
+}
+
+.authLink a {
+  color: var(--primary-color);
+  text-decoration: none;
+}
+
+.authLink a:hover {
+  text-decoration: underline;
+}

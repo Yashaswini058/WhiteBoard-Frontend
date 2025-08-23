@@ -23,6 +23,7 @@ export const BOARD_ACTIONS={
     CHANGE_TEXT: "CHANGE_TEXT",
     UNDO: "UNDO",
     REDO: "REDO",
+    LOAD_BOARD: "LOAD_BOARD",
 }
 export const ARROW_LENGTH = 20;
 export const ELEMENT_ERASE_THRESHOLD = 0.1;
