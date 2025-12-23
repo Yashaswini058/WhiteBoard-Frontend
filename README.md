@@ -2,6 +2,8 @@
 
 This is the **React frontend** for the Collaborative Whiteboard project.
 It provides a real-time interactive drawing interface, board management, and user collaboration features powered by **Socket.IO** and the backend API.
+> Part of the **Real-Time Collaborative Whiteboard** project  
+> 👉 Main repository: [Link](https://github.com/Yashaswini058/collaborative-whiteboard.git)
 
 ---
 
